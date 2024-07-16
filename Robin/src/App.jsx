@@ -28,13 +28,13 @@ export default class App extends Component {
 	};
 
 	getBlogs = () => {
-		fetch("https://localhosy:3000/blogs")
+		fetch("http://localhost:3000/blogs")
 			.then((response) => response.json())
 			.then((blogs) => this.setState({ blogs }));
 	};
 
 	getProducts = (categoryId) => {
-		let url = "https://localhost:3000/products";
+		let url = "http://localhost:3000/products";
 		if (categoryId) {
 			url += "?categoryId=" + categoryId;
 		}
@@ -46,7 +46,7 @@ export default class App extends Component {
 	};
 
 	getCategories = () => {
-		fetch("https://localhost:3000/categories")
+		fetch("http://localhost:3000/categories")
 			.then((response) => response.json())
 			.then((categories) => this.setState({ categories }));
 	};
@@ -122,7 +122,7 @@ export default class App extends Component {
 	};
 
 	getOrders = () => {
-		fetch("https://localhost:3000/orders")
+		fetch("http://localhost:3000/orders")
 			.then((response) => response.json())
 			.then((orders) => this.setState({ orders }));
 	};
@@ -214,7 +214,6 @@ export default class App extends Component {
 						element={
 							<Categories
 								products={this.state.products}
-								categories={this.state.categories}
 								getProducts={this.getProducts}
 								addToCart={this.addToCart}
 								addToWishlist={this.addToWishlist}
