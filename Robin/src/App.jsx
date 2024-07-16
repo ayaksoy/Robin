@@ -1,20 +1,20 @@
 import React, { Component } from "react";
 import Header from "./components/Header";
-import Main from "./components/Main";
+import Main from "./pages/Main";
 import Footer from "./components/Footer";
 import alertfy from "alertifyjs";
 import { Routes, Route } from "react-router-dom";
-import About from "./components/About";
-import Blog from "./components/Blog";
-import BlogDetail from "./components/BlogDetail";
-import Faq from "./components/Faq";
-import Contact from "./components/Contact";
-import Cart from "./components/Cart";
-import Checkout from "./components/Checkout";
-import Wishlist from "./components/Wishlist";
-import OrderTracking from "./components/OrderTracking";
-import Categories from "./components/Categories";
-import ProductDetail from "./components/ProductDetail";
+import About from "./pages/About";
+import Blog from "./pages/Blogs";
+import BlogDetails from "./pages/BlogDetails";
+import Faq from "./pages/Faq";
+import Contact from "./pages/Contact";
+import Cart from "./pages/Cart";
+import Checkout from "./pages/Checkout";
+import Wishlist from "./pages/Wishlist";
+import OrderTracking from "./pages/OrderTracking";
+import Categories from "./pages/Categories";
+import ProductDetail from "./pages/ProductDetails";
 
 export default class App extends Component {
 	state = {
@@ -120,6 +120,7 @@ export default class App extends Component {
 	clearCart = () => {
 		this.setState({ cart: [] });
 	};
+
 	getOrders = () => {
 		fetch("https://localhost:3000/orders")
 			.then((response) => response.json())
@@ -133,7 +134,95 @@ export default class App extends Component {
 	render() {
 		return (
 			<>
-				<Header />
+				<Header
+					cart={this.state.cart}
+					removeToCart={this.removeToCart}
+					wishlist={this.state.wishlist}
+					removeToWishlist={this.removeToWishlist}
+					categories={this.state.categories}
+				/>
+				<Routes>
+					<Route
+						path="/"
+						element={
+							<Main
+								blogs={this.state.blogs}
+								filterProducts={this.filterProducts}
+								products={this.state.products}
+								addToCart={this.addToCart}
+								addToWishlist={this.addToWishlist}
+							/>
+						}
+					/>
+					<Route
+						path="/product/:slug"
+						element={
+							<ProductDetail
+								products={this.state.products}
+								addToCart={this.addToCart}
+								getProductBySlug={this.getProductsBySlug}
+								addToWishlist={this.addToWishlist}
+							/>
+						}
+					/>
+					<Route path="/about" element={<About />} />
+					<Route
+						path="/blog/:slug"
+						element={<BlogDetails getBlogBySlug={this.getBlogBySlug} />}
+					/>
+					<Route
+						path="/blog"
+						element={
+							<Blog blogs={this.state.blogs} searchBlogs={this.searchBlogs} />
+						}
+					/>
+					<Route path="/faq" element={<Faq />} />
+					<Route path="/contact" element={<Contact />} />
+					<Route
+						path="/cart"
+						element={
+							<Cart cart={this.state.cart} removeToCart={this.removeToCart} />
+						}
+					/>
+					<Route
+						path="/checkout"
+						element={
+							<Checkout cart={this.state.cart} clearCart={this.clearCart} />
+						}
+					/>
+					<Route
+						path="/wishlist"
+						element={
+							<Wishlist
+								wishlist={this.state.wishlist}
+								removeToWishlist={this.removeToWishlist}
+								addToCart={this.addToCart}
+							/>
+						}
+					/>
+					<Route
+						path="/order-tracking"
+						element={
+							<OrderTracking
+								orders={this.state.orders}
+								products={this.state.products}
+							/>
+						}
+					/>
+					<Route
+						path="/category/:categoryId"
+						element={
+							<Categories
+								products={this.state.products}
+								categories={this.state.categories}
+								getProducts={this.getProducts}
+								addToCart={this.addToCart}
+								addToWishlist={this.addToWishlist}
+							/>
+						}
+					/>
+				</Routes>
+				<Footer />
 			</>
 		);
 	}
