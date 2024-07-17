@@ -11,22 +11,20 @@ class OrderTracking extends Component {
 		this.setState({ orderId: e.target.value });
 	};
 
-	handleTrackOrder = (e) => {
+	handleTrackOrder = async (e) => {
 		e.preventDefault();
-
-		const { orderId } = this.state;
-
-		const orderDetails = this.props.orders.find(
-			(order) => order.trackingid === orderId
-		);
-
-		if (!orderDetails) {
-			console.error("Order not found");
-			return;
-		}
-
-		this.setState({ orderDetails });
+		await this.props.getOrders();
 	};
+
+	componentDidUpdate(prevProps, prevState) {
+		if (prevProps.orders !== this.props.orders) {
+			const { orderId } = this.state;
+			const orderDetails = this.props.orders.find(
+				(order) => order.trackingid === orderId
+			);
+			this.setState({ orderDetails });
+		}
+	}
 
 	render() {
 		const { orderDetails } = this.state;

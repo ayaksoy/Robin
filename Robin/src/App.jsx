@@ -206,6 +206,7 @@ export default class App extends Component {
 							<OrderTracking
 								orders={this.state.orders}
 								products={this.state.products}
+								getOrders={this.getOrders}
 							/>
 						}
 					/>

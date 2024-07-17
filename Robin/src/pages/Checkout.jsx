@@ -1,5 +1,7 @@
 import React, { Component } from "react";
 import Hero from "../components/Hero";
+import alertify from "alertifyjs";
+import Swal from "sweetalert2";
 
 class Checkout extends Component {
 	state = {
@@ -14,20 +16,21 @@ class Checkout extends Component {
 		townCity: "",
 		state: "",
 		zipCode: "",
-		orderId: "",
-		orderDetails: null,
 	};
 
 	handleInputChange = (e) => {
-		this.setState({ [e.target.name]: e.target.value });
+		this.setState({
+			[e.target.name]: e.target.value,
+		});
 	};
 
 	handleFormSubmit = (e) => {
 		e.preventDefault();
+		console.log(this.state);
 
 		const order = {
-			id: Math.floor(Math.random() * 1000000000).toString(),
-			trackingid: `FURN-${Math.random()
+			id: String(Math.floor(Math.random() * 1000000000)),
+			trackingid: `FURN - ${Math.random()
 				.toString(36)
 				.substr(2, 6)
 				.toUpperCase()}`,
@@ -41,37 +44,35 @@ class Checkout extends Component {
 			},
 			body: JSON.stringify(order),
 		})
-			.then((res) => res.json())
+			.then((response) => response.json())
 			.then((data) => {
-				console.log("Order saved successfully", data);
+				console.log(data);
 				this.props.clearCart();
-				alert(`Tracking Id: ${order.trackingid}`);
-				this.props.addOrder(order); // Yeni siparişi ekle
-				this.setState({ orderId: order.id, orderDetails: order });
+				Swal.fire({
+					title: "Order Placed!",
+					text: `Your order has been placed! Tracking ID: ${order.trackingid}`,
+					icon: "success",
+					showCancelButton: true,
+					confirmButtonText: "Copy Tracking ID",
+					cancelButtonText: "Close",
+				}).then((result) => {
+					if (result.isConfirmed) {
+						navigator.clipboard.writeText(order.trackingid);
+						Swal.fire(
+							"Copied!",
+							"Tracking ID has been copied to clipboard.",
+							"success"
+						);
+					}
+				});
 			})
-			.catch((err) => {
-				console.error("Error saving order", err);
+			.catch((error) => {
+				console.error("Error saving the order", error);
+				alertify.error("Error saving the order");
 			});
 	};
 
-	handleTrackOrder = (e) => {
-		e.preventDefault();
-
-		const { orderId } = this.state;
-		const orderDetails = this.props.orders.find(
-			(order) => order.id === orderId
-		);
-
-		if (!orderDetails) {
-			this.setState({ orderDetails: null, error: "Order not found" });
-		} else {
-			this.setState({ orderDetails, error: null });
-		}
-	};
-
 	render() {
-		const { orderDetails, error } = this.state;
-
 		return (
 			<>
 				<Hero title="Checkout" />
@@ -89,14 +90,118 @@ class Checkout extends Component {
 															Billing &amp; Shipping Address
 														</h4>
 														<div className="row">
-															{/* ... other form inputs */}
+															<div className="col-md-6 col-12">
+																<label htmlFor="firstName">First Name*</label>
+																<input
+																	type="text"
+																	id="firstName"
+																	name="firstName"
+																	placeholder="First Name"
+																	onChange={this.handleInputChange}
+																/>
+															</div>
+															<div className="col-md-6 col-12">
+																<label htmlFor="lastName">Last Name*</label>
+																<input
+																	type="text"
+																	id="lastName"
+																	name="lastName"
+																	placeholder="Last Name"
+																	onChange={this.handleInputChange}
+																/>
+															</div>
+															<div className="col-md-6 col-12">
+																<label htmlFor="email">Email Address*</label>
+																<input
+																	type="email"
+																	id="email"
+																	name="email"
+																	placeholder="Email Address"
+																	onChange={this.handleInputChange}
+																/>
+															</div>
+															<div className="col-md-6 col-12">
+																<label htmlFor="phoneNumber">Phone no*</label>
+																<input
+																	type="text"
+																	id="phoneNumber"
+																	name="phoneNumber"
+																	placeholder="Phone number"
+																	onChange={this.handleInputChange}
+																/>
+															</div>
 															<div className="col-12">
-																<button
-																	className="theme-button place-order-btn"
-																	type="submit"
+																<label htmlFor="companyName">
+																	Company Name
+																</label>
+																<input
+																	type="text"
+																	id="companyName"
+																	name="companyName"
+																	placeholder="Company Name"
+																	onChange={this.handleInputChange}
+																/>
+															</div>
+															<div className="col-12">
+																<label htmlFor="addressLine1">Address*</label>
+																<input
+																	type="text"
+																	id="addressLine1"
+																	name="addressLine1"
+																	placeholder="Address line 1"
+																	onChange={this.handleInputChange}
+																/>
+																<input
+																	type="text"
+																	id="addressLine2"
+																	name="addressLine2"
+																	placeholder="Address line 2"
+																	onChange={this.handleInputChange}
+																/>
+															</div>
+															<div className="col-md-6 col-12">
+																<label htmlFor="country">Country*</label>
+																<select
+																	id="country"
+																	name="country"
+																	className="nice-select"
+																	onChange={this.handleInputChange}
 																>
-																	PLACE ORDER
-																</button>
+																	<option value="İstanbul">İstanbul</option>
+																	<option value="Ankara">Ankara</option>
+																	<option value="Hatay">Hatay</option>
+																	<option value="Antalya">Antalya</option>
+																</select>
+															</div>
+															<div className="col-md-6 col-12">
+																<label htmlFor="townCity">Town/City*</label>
+																<input
+																	type="text"
+																	id="townCity"
+																	name="townCity"
+																	placeholder="Town/City"
+																	onChange={this.handleInputChange}
+																/>
+															</div>
+															<div className="col-md-6 col-12">
+																<label htmlFor="state">State*</label>
+																<input
+																	type="text"
+																	id="state"
+																	name="state"
+																	placeholder="State"
+																	onChange={this.handleInputChange}
+																/>
+															</div>
+															<div className="col-md-6 col-12">
+																<label htmlFor="zipCode">Zip Code*</label>
+																<input
+																	type="text"
+																	id="zipCode"
+																	name="zipCode"
+																	placeholder="Zip Code"
+																	onChange={this.handleInputChange}
+																/>
 															</div>
 														</div>
 													</div>
@@ -106,91 +211,58 @@ class Checkout extends Component {
 														<div className="col-12">
 															<h4 className="checkout-title">Cart Total</h4>
 															<div className="checkout-cart-total">
-																{/* ... cart summary */}
+																<h4>
+																	Product <span>Total</span>
+																</h4>
+																<ul>
+																	{this.props.cart.map((item) => (
+																		<li key={item.product.id}>
+																			{item.product.title} X {item.quantity}
+																			<span>
+																				${item.product.price * item.quantity}
+																			</span>
+																		</li>
+																	))}
+																</ul>
+																<p>
+																	Sub Total{" "}
+																	<span>
+																		$
+																		{this.props.cart.reduce(
+																			(a, c) =>
+																				a + c.product.price * c.quantity,
+																			0
+																		)}
+																	</span>
+																</p>
+																<p>
+																	Shipping Fee <span>$15.00</span>
+																</p>
+																<h4>
+																	Grand Total{" "}
+																	<span>
+																		$
+																		{this.props.cart.reduce(
+																			(a, c) =>
+																				a + c.product.price * c.quantity,
+																			0
+																		) + 15}
+																	</span>
+																</h4>
 															</div>
+														</div>
+														<div className="col-12">
+															<button
+																className="theme-button place-order-btn"
+																type="submit"
+															>
+																PLACE ORDER
+															</button>
 														</div>
 													</div>
 												</div>
 											</div>
 										</form>
-										<div className="order-tracking-wrapper">
-											<div className="order-track-form">
-												<p>
-													To track your order please enter your Order ID in the
-													box below and press the "Track" button. This was given
-													to you on your receipt and in the confirmation email
-													you should have received.
-												</p>
-												<form onSubmit={this.handleTrackOrder}>
-													<div className="row">
-														<div className="col-lg-12">
-															<label htmlFor="orderId">Order ID</label>
-															<input
-																type="text"
-																id="orderId"
-																name="orderId"
-																value={this.state.orderId}
-																onChange={this.handleInputChange}
-																placeholder="Found in your order confirmation email"
-															/>
-														</div>
-														<div className="col-lg-12 text-center">
-															<button
-																className="theme-button theme-button--order-track"
-																type="submit"
-															>
-																TRACK
-															</button>
-														</div>
-													</div>
-												</form>
-												{error && <p>{error}</p>}
-												{orderDetails && (
-													<div className="order-details">
-														<h3>Order Details</h3>
-														<p>Tracking ID: {orderDetails.trackingid}</p>
-														<h4>Products:</h4>
-														<ul>
-															{orderDetails.products.map((productId) => {
-																const product = this.props.products.find(
-																	(p) => p.id === productId
-																);
-																if (!product) {
-																	return (
-																		<li key={productId}>
-																			Product with ID {productId} not found
-																		</li>
-																	);
-																}
-																return (
-																	<li key={productId}>
-																		<div className="product-info">
-																			<h4>{product.title}</h4>
-																			<p>Price: ${product.price}</p>
-																		</div>
-																	</li>
-																);
-															})}
-														</ul>
-														<h4>Total Price:</h4>
-														<p>
-															$
-															{orderDetails.products.reduce(
-																(total, productId) => {
-																	const product = this.props.products.find(
-																		(p) => p.id === productId
-																	);
-																	return product
-																		? total + product.price
-																		: total;
-																},
-																0
-															)}
-														</p>
-													</div>
-												)}
-											</div>
-										</div>
 									</div>
 								</div>
 							</div>
