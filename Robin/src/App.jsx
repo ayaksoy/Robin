@@ -201,7 +201,7 @@ export default class App extends Component {
 						}
 					/>
 					<Route
-						path="/order-tracking"
+						path="/ordertracking"
 						element={
 							<OrderTracking
 								orders={this.state.orders}
